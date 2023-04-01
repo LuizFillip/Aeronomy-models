@@ -2,22 +2,17 @@ import numpy as np
 from pyglow.pyglow import Point
 from datetime import datetime, date, timedelta
 import pandas as pd
+import datetime as dt
 
+coords = {"car": (-7.38, -36.528),  # Cariri
+          "for": (-3.73, -38.522),  # Fortaleza
+          "saa": (-2.53, -44.296),  # São Luis
+          "boa": (2.8, -60.7),      # Boa Vista
+          "ccb": (-9.5, -54.8),     # Cachimbo
+          "cgg": (-20.5, 45.7)}     # Campo Grande
 
-def get_neutrals(dn, lat = -3.73, lon = -38.522):
-   
-    heights = np.arange(100, 605, 1)
-
-    Ne = []
-    for alt in heights:
-        point = Point(dn, lat, lon, alt)
-        point.run_msis()
-        Ne.append(point.ne)
-
-    return pd.DataFrame({"Ne": Ne, "date": dn}, index = heights)
-
-def get_winds(dn, lat = -3.73, lon = -38.522):
-
+def get_winds(dn, site):
+    lat, lon = coords[site] 
     zon_wind = []
     mer_wind = []
 
@@ -39,37 +34,18 @@ def get_winds(dn, lat = -3.73, lon = -38.522):
     return df
 
 
-day = 1
-month = 1
-year = 2014
-
-path = "venv/density/"
-
-def run_for_all_night(function, date):
-    out_dat = []
-    year, month, day = date.year, date.month, date.day
-    for hour in np.arange(19, 23, 1):
-        for minute in np.arange(0, 60, 10):
-            dn = datetime(year, month, day, hour, minute)
-            out_dat.append(function(dn))
-    return pd.concat(out_dat)
-
-
-
-
-
 def float_to_time(tt):
     args = str(tt).split(".")
     hour = int(args[0])
     minute = int(float("0." + args[1])*60)
     return hour, minute
 
-import datetime
 
 def get_wind_by_time(site, year = 2014, alt = 250):
+    
 
-    dates = pd.date_range(str(year) + "-1-1 18:00", 
-                          str(year) + "-12-31 00:00", 
+    dates = pd.date_range("2012-1-1 18:00", 
+                          "2016-12-31 00:00", 
                            freq = "10min")
 
     data = {
@@ -77,11 +53,7 @@ def get_wind_by_time(site, year = 2014, alt = 250):
             "mer": [], 
             "time": []
             }
-
-    coords = {"car": (-7.38, -36.528), 
-              "for": (-3.73, -38.522), 
-              "saa": (-2.53, -44.296)}
-
+    
     lat, lon = coords[site]
 
     for dn in dates:
@@ -94,14 +66,84 @@ def get_wind_by_time(site, year = 2014, alt = 250):
         data["time"].append(dn)
 
     df = pd.DataFrame(data)
+    
+    df = df.set_index("time")
 
-    df.to_csv(site + '_' + str(alt) + '_' + str(year) + '.txt')
+    df.to_csv(site + '_250_2012_2016.txt', 
+              index = True)
     
     return df
 
-df = get_wind_by_time(site = "saa", year = 2013, alt = 500)
+#df = get_wind_by_time(site = "car", year = 2013, alt = 500)
 
 
-print(df)
+
+def get_density_by_height(dn, site = "saa", 
+                hmin = 200, 
+                hmax = 500, step = 1):
+    
+    lat, lon = coords[site]
+
+    heights = np.arange(hmin, hmax + step, step)
+
+    Ne = []
+    for alt in heights:
+        point = Point(dn, lat, lon, alt)
+
+        point.run_iri()
+        Ne.append(point.ne)
+
+    return pd.DataFrame({"Ne": Ne, 
+                         "alt": heights}, 
+                          index = [dn] * len(heights))
+def run_year_density():
+    
+    dates = pd.date_range("2013-1-1 21:00", 
+                         "2013-12-31 21:00", 
+                        freq = "1D")
+        
+    out = []
+
+    for dn in dates:
+        print("process...", dn)
+        out.append(get_density_by_height(dn))
+
+    df = pd.concat(out)
+        
+    df.to_csv("SAA_2013.txt", index = True)
+
+    print(df)
+    
+
+def run_grid_wind():
+    dates = [dt.datetime(2013, 1, 1, 21, 0), 
+            dt.datetime(2013, 1, 2, 0, 0), 
+            dt.datetime(2013, 1, 2, 3, 0), 
+            dt.datetime(2013, 1, 2, 6, 0)] 
+    data = {
+            "zon": [], 
+            "mer": [], 
+            "time": [],
+            "lat": [], 
+            "lon": []
+            }
+    
+    
+    for dn in dates:
+        for lat in np.arange(-20, 0, 0.5):
+            for lon in np.arange(-80, -30, 0.5):
+                point = Point(dn, lat, lon, 250)
+                point.run_hwm14()
+                data["time"].append(dn)
+                data["lat"].append(lat)
+                data["lon"].append(lon)
+                data["zon"].append(point.u)
+                data["mer"].append(point.v) 
+                
+                
+    df = pd.DataFrame(data)
+
+    df.to_csv("grid_winds_20130101.txt", index = True)
+
 
 

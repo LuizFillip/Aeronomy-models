@@ -1,2 +1,3 @@
 # Atmospheric-models
-Plotting of modeled data from atmospheric and ionospheric models 
+
+Plotting of modeled data from Aeronomy models (IRI, HWM and MSISE)
