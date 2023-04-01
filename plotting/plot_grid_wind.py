@@ -1,12 +1,13 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+
 import datetime as dt
-from GEO.mapping import quick_map
+from GEO.src.mapping import quick_map
 import cartopy.crs as ccrs
-import setup as s
+import matplotlib.pyplot as plt
+import settings as s
 import numpy as np
 
-def load_HWM():
+def load_HWM(dn):
 
     infile = "database/HWM/grid_winds_20130101.txt"
     
@@ -14,15 +15,13 @@ def load_HWM():
     
     df["time"] = pd.to_datetime(df["time"])
     
-    dn = dt.datetime(2013, 1, 1, 21, 0)
-    
     df = df.loc[df["time"] == dn, 
                 ["lat", "lon", "zon"]]
     
-    df = df.loc[(df["lat"] >= -10) &
+    df = df.loc[(df["lat"] >= -9) &
                 (df["lat"] <= -3) &
                 (df["lon"] >= -40) &
-                (df["lon"] <= -32)]
+                (df["lon"] <= -34)]
     
     return pd.pivot_table(
         df, 
@@ -30,13 +29,14 @@ def load_HWM():
         columns = "lon", 
         index = "lat")
 
-def plot_grid_wind():
+def plot_grid_wind(dn):
+    
     fig, ax = plt.subplots(
         figsize = (8, 8), 
         subplot_kw = {'projection': ccrs.PlateCarree()}
         )
     
-    df = load_HWM()
+    df = load_HWM(dn)
     
     img = ax.contourf(df.columns, 
                  df.index, 
@@ -47,12 +47,23 @@ def plot_grid_wind():
     vmin = round(np.min(df.values))
     vmax = round(np.max(df.values))
     
-    ticks = np.arange(vmin, vmax, 5)
+    ticks = np.arange(vmin, vmax + 4, 2)
     
     s.colorbar_setting(
         img, ax, ticks, 
         label = 'Velocidade zonal (m/s)')
     
-    quick_map(ax)
+    lat_lims = dict(min = -9, 
+                    max = -3, 
+                    stp = 1)
+
+    lon_lims = dict(min = -40, 
+                    max = -34, 
+                    stp = 1)    
     
-plot_grid_wind()
+    quick_map(ax, lon_lims, lat_lims)
+    
+    ax.set(title = dn)
+    
+dn = dt.datetime(2013, 1, 2, 3, 0)
+plot_grid_wind(dn)

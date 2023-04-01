@@ -3,7 +3,6 @@ from common import runMSISE
 from RTIparameters import neutrals
 from datetime import datetime
 import matplotlib.pyplot as plt
-from plotConfig import *
 
 date = datetime(2014, 1, 1, 21, 10)
 
@@ -62,9 +61,3 @@ ax1.set(xscale = "log",
         xlim = [1e-9, 10e2],
         xlabel = ("Taxa de recombinação,\n " + 
         r"$\nu_R~(s^{-1})$"))
-
-text_painels(ax, x = 0.01, y = 0.95, 
-                 fontsize = 35)
-
-
-fig.savefig(path_tex("methods") + "\\neutral_parameters.png")
