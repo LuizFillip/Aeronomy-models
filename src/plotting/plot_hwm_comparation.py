@@ -69,7 +69,3 @@ def plot_hwm_comparation(
     
     return fig 
 
-
-fig = plot_hwm_comparation(
-    date = dt.datetime(2002, 10, 11), 
-    folder = "HWM93")

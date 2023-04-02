@@ -5,7 +5,7 @@ import pandas as pd
 from Base.src.winds import effective_wind
 from GEO.src.core import run_igrf
 import settings as s
-
+from utils import save_plot
 
     
 
@@ -21,7 +21,7 @@ def plot_winds_profiles(
 
     df = pd.read_csv(infile, index_col = 0)
 
-    fig = plt.figure(figsize = (8, 4), dpi = 300)
+    fig = plt.figure(figsize = (6, 4), dpi = 300)
 
     ax = fig.add_subplot()
 
@@ -29,15 +29,19 @@ def plot_winds_profiles(
 
     ax.plot(df[["mer", "zon"]], 
             df.index, 
-            label = ["$U_\\theta$ (meridional)", 
-               "$U_\phi$ (zonal)"])
+            label = 
+            ["$U_\\theta$ (meridional)", 
+             "$U_\phi$ (zonal)"]
+            )
 
     U = effective_wind()
 
-    ax.plot(U.eff_zonal(df.zon, df.mer, d), df.index, 
+    ax.plot(U.eff_zonal(df.zon, df.mer, d), 
+            df.index, 
             label = "$U_y^{Ef} = U_\phi \cos D + U_{\\theta} \sin D$")
 
-    ax.plot(U.eff_meridional(df.zon, df.mer, d, i), df.index, 
+    ax.plot(U.eff_meridional(df.zon, df.mer, d, i), 
+            df.index, 
             label = "$U_x^{Ef} = (U_{\\theta} \cos D + U_\phi \sin D) \cos I$")
 
     ax.legend(loc = "upper left")
@@ -65,6 +69,8 @@ def plot_winds_profiles(
 
     return fig
 
-fig = plot_winds_profiles(
-        dn = dt.datetime(2013, 1, 1, 21, 0), 
-        site = "São Luis")
+# fig = plot_winds_profiles(
+#         dn = dt.datetime(2013, 1, 1, 21, 0), 
+#         site = "São Luis")
+
+save_plot(plot_winds_profiles)
