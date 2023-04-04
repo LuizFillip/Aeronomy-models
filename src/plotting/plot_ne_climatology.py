@@ -1,35 +1,57 @@
 import pandas as pd
-from build import paths 
 import matplotlib.pyplot as plt
 import numpy as np
-import setup as s
+import settings as s
+from GEO.src.core import coords
+import iri2016 as iri
 
-infile = paths().get_pathfile("IRI")
 
 
 
-def plotElectronContourf(infile):
-    df = pd.read_csv(infile, index_col = 0)
+altitudes = np.arange(75, 705, 5)
+dates =  pd.date_range("2013-1-1", "2013-12-31", 
+                        freq = "2D")
+
+def get_ne_profiles(alts, dates):
+    out = []
     
-    df.index = pd.to_datetime(df.index)
+    step = alts[1] - alts[0]
+
+    for dn in dates:
     
-    df1 = pd.pivot_table(df, 
-                         columns = df.index, 
-                         index = "alt", 
-                         values = "Ne")
+        glat, glon = coords["saa"]
+        
+        ds = iri.IRI(
+            dn, [min(alts), max(alts), step], 
+            glat, glon)
+        
+        out.append(ds.ne.values)
+        
+        
+    ne = np.array(out)
     
-    fig, ax = plt.subplots(figsize = (8, 5))
+    return ne 
+
+
+
+def plot_ne_climatology(ne, dates, altitudes):
     
+    fig, ax = plt.subplots(figsize = (8, 5), dpi = 300)
+
     s.config_labels()
-    
-    cs = plt.contourf(df1.columns , 
-                     df1.index, 
-                     df1.values, 50, 
-                     cmap = "Blues")
-    
-    plt.colorbar(cs)
-    
+
+    plt.contourf(
+        dates, 
+        altitudes, 
+        ne.T, 
+        40, 
+        cmap = "Blues"
+        )
+
     ax.set(ylabel = "Altitude (km)", 
            xlabel = "Meses")
-    
+
     s.format_axes_date(ax)
+
+
+
