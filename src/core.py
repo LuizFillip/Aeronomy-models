@@ -1,8 +1,8 @@
-from GEO.src.core import coords
+from GEO.src.core import sites
 import iri2016 as iri
 import datetime as dt 
 from Models.src.run_msise import run_msise
-from Base.src.iono import collision_frequencies, conductivity
+from Base.src.iono import collision_frequencies, conductivity, conductivity2
 import pandas as pd
 
 def neutral_iono_parameters(
@@ -13,7 +13,7 @@ def neutral_iono_parameters(
         site = "saa"
         ):
     
-    glat, glon = coords[site]
+    glat, glon = sites[site]["coords"]
 
     
     ds = iri.IRI(dn, [hmin, hmax, step], glat, glon)
@@ -39,7 +39,8 @@ def neutral_iono_parameters(
         msis.O, msis.O2, 
         msis.N2, msis.Tn
         )
-    cond = conductivity(ne, nue, nui)
+    
+    cond = conductivity2(ne, nue, nui)
     
     data = {
         "nue": nue, 

@@ -1,49 +1,43 @@
 import pandas as pd
-from common import getPyglow
-from RTIparameters import scale_gradient
-from datetime import datetime
+import datetime as dt
+import settings as s
+from GEO.src.mapping import quick_map
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import numpy as np
 
+fig, ax = plt.subplots(
+    figsize = (8, 8), 
+    dpi = 300, 
+    subplot_kw = 
+    {'projection': ccrs.PlateCarree()}
+    )
 
-date = datetime(2014, 1, 1, 21, 10)
+s.config_labels(fontsize = 15)
 
-pyglow = getPyglow(date)
+lat_lims = dict(min = -20, max = 15, stp = 5)
+lon_lims = dict(min = -75, max = -40, stp = 10)    
 
+quick_map(ax, lon_lims, lat_lims)
 
-ne = pyglow.density()
+s.config_labels()
 
+dn = dt.datetime(2013, 1, 1, 21, 0)
 
-fig, ax = plt.subplots(ncols = 2, 
-                       sharey = True, 
-                       figsize = (15, 15))
+infile = "WSL/ne.txt"
 
+def pivot_table(infile):
+    df = pd.read_csv(infile, index_col = 0)
+    
+    return pd.pivot(df, columns = "1", index = "0", values = "2")
 
-plt.subplots_adjust(wspace = 0.1)
-
-alts = np.arange(100, 600 + 1, 1)
-
-
-args = dict(lw = 4, color = "k")
-
-ax[0].plot(ne, alts, **args)
-
-ax[1].plot(scale_gradient(ne), alts, **args)
-
-ax[0].set(ylabel = "Altitude (km)", 
-          xscale = "log", 
-          xlabel = ("Densidade eletrônica,\n"+ 
-                              r" $n_0~(cm^{-3}$)"),)
-
-ax[1].axvline(0, linestyle = "--", lw = 2, color = "k")
-ax[1].set(xlim = [-6e-5, 6e-5], 
-          xlabel = ("Gradiente de escala \n" + 
-       r"$ L^{-1} = \frac{1}{n_0} \frac{\partial n_0}{\partial z} (10^{-3} m^{-1})$"))
-
-
-ax[1].xaxis.set_major_formatter(
-    ticker.FuncFormatter(lambda y, _: '{:g}'.format(y/1e-3)))
-
-
-
+def plot_contours(df):
+    img = ax.contourf(
+        df.columns, 
+        df.index, 
+        df.values, 50, cmap = "rainbow")
+    
+    vls = df.values.flatten()
+    ticks = np.linspace(min(vls), max(vls), 10)
+    
+    s.colorbar_setting(img, ax, ticks, label = 'Ne ($cm^{-3}$)')

@@ -115,12 +115,3 @@ def get_parameters(
     
     return perd, hall
 
-
-def get_lat(apex):
-
-    infile = "mag_lat.txt"
-    
-    df = pd.read_csv(infile, index_col = 0)
-    
-    return tuple(df.loc[df.index == apex, :].values[0])
-print(get_lat(300))

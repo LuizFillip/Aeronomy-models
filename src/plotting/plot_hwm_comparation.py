@@ -1,15 +1,14 @@
 import datetime as dt
 import matplotlib.pyplot as plt
-from RayleighTaylor.core import load_HWM
-import setup as s
+from common import load
+import settings as s
 
 def plot_component(ax, df, name, color):
     
     ax.plot(df, label = name, color = color)
     ax.legend(loc = "lower left")
     ax.grid()
-   
-    
+     
     s.format_axes_date(
         ax, 
         time_scale = "hour", 
@@ -69,3 +68,6 @@ def plot_hwm_comparation(
     
     return fig 
 
+df = load().HWM()
+dn = dt.date(2013, 1, 1)
+print(df.loc[df.index.date == dn].plot())

@@ -9,8 +9,7 @@ import iri2016 as iri
 
 
 altitudes = np.arange(75, 705, 5)
-dates =  pd.date_range("2013-1-1", "2013-12-31", 
-                        freq = "2D")
+dates =  pd.date_range("2013-1-1", "2013-12-31", freq = "2D")
 
 def get_ne_profiles(alts, dates):
     out = []

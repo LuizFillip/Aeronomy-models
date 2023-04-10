@@ -1,4 +1,4 @@
-from GEO.src.core import coords
+from GEO.src.core import sites
 import pandas as pd
 import numpy as np
 from nrlmsise00 import msise_flat
@@ -12,9 +12,24 @@ def run_msise(
         site = "saa"
         ):
     
-    glat, glon = coords[site]
+    glat, glon = sites[site]["coords"]
     
-    """Running models MSISE00"""
+    """Running models MSISE00
+    densities: list of floats
+		0. He number density [cm^-3]
+		1. O number density [cm^-3]
+		2. N2 number density [cm^-3]
+		3. O2 number density [cm^-3]
+		4. AR number density [cm^-3]
+		5. total mass density [g cm^-3] (includes d[8] in gtd7d)
+		6. H number density [cm^-3]
+		7. N number density [cm^-3]
+		8. Anomalous oxygen number density [cm^-3]
+            peratures: list of floats
+		0. Exospheric temperature [K]
+		1. Temperature at `alt` [K]
+    
+    """
     
     alts = np.arange(hmin, hmax + step, step)
      
@@ -55,8 +70,6 @@ def timerange_MSISE(
         ts = run_msise(dn, hmin = fixed_alt, hmax = fixed_alt)
         
         ts.index = [dn]
-        # ts["R"] = R(ts.O2,  ts.N2)
-        # ts["nu"] = nui(ts.Tn, ts.O, ts.O2,  ts.N2)
         out.append(ts)
     
     return pd.concat(out)
