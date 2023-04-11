@@ -67,7 +67,10 @@ def timerange_MSISE(
             freq = "10min"
             ):
         
-        ts = run_msise(dn, hmin = fixed_alt, hmax = fixed_alt)
+        ts = run_msise(
+            dn, 
+            hmin = fixed_alt, 
+            hmax = fixed_alt)
         
         ts.index = [dn]
         out.append(ts)
