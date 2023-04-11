@@ -14,7 +14,6 @@ def neutral_iono_parameters(
         ):
     
     glat, glon = sites[site]["coords"]
-
     
     ds = iri.IRI(dn, [hmin, hmax, step], glat, glon)
     
