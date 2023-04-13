@@ -34,14 +34,17 @@ def sep_altitudes(df, h):
      
     return arr.lon.values, arr.lat.values
 
-def interpol_coords(df, h, points = 50):
+def interpol_coords(df, h, points = 30):
     
     lons, lats = sep_altitudes(df, h)
     
     spl = CubicSpline(lons, lats)
 
-    range_lon = np.linspace(lons[0], lons[-1], points)    
-    return range_lon, spl(range_lon)
+    new_lon = np.linspace(lons[0], lons[-1], points)    
+    new_lat = spl(new_lon)
+    
+    return np.round(new_lon, 3), np.round(new_lat, 3)
+
 
 def run_models(dn, h, glon, glat, mlat_range):
     
@@ -61,64 +64,61 @@ def save_results(out, name):
     
     return df
     
+dn = dt.datetime(2013, 1, 1, 21, 0)
+base = 150
 
-
-
-def run_in_apex(
-        infile, 
-        dn = dt.datetime(2013, 1, 1, 21, 0), 
-        base = 150, 
-        points = 50
-        ):
+for col in ["south", "north", "both"]:
+    
+    infile = f"ranges_{col}.txt"
     
     df = pd.read_csv(infile, index_col = 0)
-
+    
     heights = df.index.unique()
-
-    out = []
+    
+    south = []
+    north = []
+    both = []
     
     for h in heights:
         
-        glon, glat = interpol_coords(df, h, points = points)
+        rlat = np.radians(df.loc[df.index == h, "rlat"].unique()[0])
         
-        max_lat = Apex(h).apex_lat_base(base = base)
-                
-        mlat_range = np.linspace(0, max_lat, points)
-    
-        print("process...", h) 
+        
+        if col == "south":
+            s, e = 0, -rlat
+        elif col == "north":
+            s, e = rlat, 0
+        else:
+            s, e = -rlat, rlat
+           
+        
+        glon, glat = sep_altitudes(df, h)
+        mlat_range = np.linspace(s, e, len(glon))
+            
         for i, mlat in enumerate(mlat_range):
-             
-             zeq = Apex(h).apex_height(mlat)
-     
-             ne, te = get_ionos(dn, zeq, glat[i], glon[i])
-             
-             He, O, N2, O2, H, N, Tn = get_neutrals(
-                 dn, zeq, glat[i], glon[i])
-             
-             out.append([zeq, h, glat[i], glon[i], 
-                         mlat, ne, te, He, O, 
-                         N2, O2, H, N, Tn])
-         
-        
+            
+            zeq = Apex(h).apex_height(mlat)
+            
+            
+            ne, te = get_ionos(dn, zeq, glat[i], glon[i])
+            
+            He, O, N2, O2, H, N, Tn = get_neutrals(
+                dn, zeq, glat[i], glon[i])
+            
+            vars()[col].append(
+                [zeq, h, glat[i], glon[i], 
+                 mlat, ne, te, He, O, 
+                 N2, O2, H, N, Tn]
+                )
     name = infile.replace("ranges", "results")
-    
+     
     cols = ["zeq", "alt", "lat", "lon", "mlat",
-            "ne", "te", "he", "o", "n2", 
-            "o2", "h", "n", "tn"]
-    
-    df = pd.DataFrame(out, columns = cols)
-    
+             "ne", "te", "he", "o", "n2", 
+             "o2", "h", "n", "tn"]
+     
+    df = pd.DataFrame(vars()[col], columns = cols)
+     
     df.to_csv(f"{name}", index = True)
-    
-    return df
-
-
-
-infile = "ranges_north.txt"
-
-run_in_apex(
-        infile, 
-        dn = dt.datetime(2013, 1, 1, 21, 0), 
-        base = 150, 
-        points = 50
-        )
+     
+                
+           

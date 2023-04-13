@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from nrlmsise00 import msise_flat
 from PlanetaryIndices.core import get_indices
+import datetime as dt
 
 site = "saa"
 glat, glon = sites[site]["coords"]
@@ -62,6 +63,7 @@ def run_msise(
 
 
 
+
 def timerange_MSISE(
         dn, 
         fixed_alt = 300, 
@@ -83,3 +85,44 @@ def timerange_MSISE(
         out.append(ts)
     
     return pd.concat(out)
+
+
+dn = dt.datetime(2013, 1, 1, 0, 0)
+
+out = []
+
+for glat in np.arange(-20, 20, 1):
+    for glon in np.arange(-75, -30, 1):
+    
+        df = run_msise(
+                dn,
+                glat, 
+                glon,
+                hmin = 300, 
+                hmax = 300, 
+                step = 1, 
+                )
+         
+        out.append([glat, glon, tuple(df.values[0])])
+
+#%%
+#df
+
+
+arr = np.array(out)[:, 2]
+out2 = []
+for i in range(len(arr)):
+    out1 = []
+    out2.append(out1)
+    for j in arr[i]:
+        out1.append(j)
+        
+o1 = np.array(out2)
+
+o2 = np.array(out)[:, 0:2]
+
+
+columns = ["lat", "lon", "He", "O", "N2", "O2",  "H",  "Tn"]
+
+df = pd.DataFrame(np.hstack([o2, o1]), columns = columns)
+df.to_csv(dn.strftime("%Y%m%d%H%M.txt"))
