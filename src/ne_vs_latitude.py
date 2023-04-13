@@ -3,7 +3,7 @@ import datetime as dt
 from common import load
 
 
-class electron_density:
+class Ne:
     
     def __init__(
             self, 

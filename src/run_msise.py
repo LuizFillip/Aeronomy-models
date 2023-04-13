@@ -4,19 +4,26 @@ import numpy as np
 from nrlmsise00 import msise_flat
 from PlanetaryIndices.core import get_indices
 
+site = "saa"
+glat, glon = sites[site]["coords"]
+
+
 def run_msise(
-        datetime, 
+        dn,
+        glat, 
+        glon,
         hmin = 200, 
         hmax = 500, 
         step = 1, 
-        site = "saa"
         ):
     
-    glat, glon = sites[site]["coords"]
     
-    """Running models MSISE00
+    """
+    Running models MSISE00
+    
     densities: list of floats
-		0. He number density [cm^-3]
+	
+    	0. He number density [cm^-3]
 		1. O number density [cm^-3]
 		2. N2 number density [cm^-3]
 		3. O2 number density [cm^-3]
@@ -33,9 +40,9 @@ def run_msise(
     
     alts = np.arange(hmin, hmax + step, step)
      
-    t = get_indices(datetime.date())
+    t = get_indices(dn.date())
     
-    res = msise_flat(datetime, alts[None, :], 
+    res = msise_flat(dn, alts[None, :], 
                      glat, glon, 
                      t.get("F10.7a"), 
                      t.get("F10.7obs"), 

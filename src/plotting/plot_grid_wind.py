@@ -5,17 +5,20 @@ import matplotlib.pyplot as plt
 import settings as s
 import numpy as np
 from utils import save_but_not_show
-
-
+from Models.src.join_model_results import ds
 
 def plot_grid_wind(
         ax, dn, values, 
         lons, lats, ticks):
     
-    img = ax.pcolormesh(lons, lats, values, 
-                        vmin = ticks[0], 
-                        vmax = ticks[-1],
-                        cmap = "rainbow")
+    vmin = ticks[0] 
+    vmax = ticks[-1]
+    
+    levels = np.linspace(vmin, vmax, 50)
+    
+    img = ax.contourf(lons, lats, values, 
+                      levels = levels,
+                      cmap = "rainbow")
     
     s.colorbar_setting(
         img, ax, ticks, 
@@ -70,3 +73,5 @@ def save_plots(ds, coord = "meridional"):
         print("save...", dn)
         
         save_but_not_show(fig, save_in)
+
+save_plots(ds, coord = "zonal")
