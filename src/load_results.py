@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import xarray as xr
 import numpy as np
+from FluxTube.src.core import get_conductivities
+
 from Models.src.utils import (sel_columns,  
                               create_dict,  
                               convert_to_array)
@@ -31,6 +33,7 @@ def parameters_into_dict(infile):
     cols = sel_columns(chunk)
     
     data = create_dict(cols)
+    times = []
     
     for filename in files:
 
@@ -40,8 +43,13 @@ def parameters_into_dict(infile):
                 coord = coord)
             data[coord].append(df.values)
             
-    coords = {"lon": df.columns.values, 
-              "lat": df.index.values}
+    lon = df.columns.values
+    lat = df.index.values
+            
+    coords = {
+        "lon": lon,
+        "lat": lat
+              }
             
     return convert_to_array(data), coords
 
@@ -51,32 +59,21 @@ def save_in_dataset(zon, mer):
     lats = np.arange(-20, 20, 1)
     lons = np.arange(-75, -25, 1)
     
-    times = pd.date_range("2013-1-1 00:00", "2013-1-1 23:50", freq = "10min")
-    
-    ds = xr.Dataset(
-        {
-         "zonal": (["time", "lat", "lon"], zon), 
-         "meridional":(["time", "lat", "lon"], mer),
-             }, 
-        coords = {
-            "time": times,
-            "lon": lons,
-            "lat": lats
-                        })
+ 
     
     return ds
 
-def main():
-    infile = "D:\\iri2016\\" 
-    data, coords = parameters_into_dict(infile)
-    
-    print(coords)
-    
-    #ds = save_in_dataset(zon, mer)
 
-from FluxTube.src.core import get_conductivities
 
-def join_models_compute_conds():
+def join_models_results(
+        path_iri, 
+        path_msis,
+        filename):
+    
+    """
+    Get results grid from iri and msis and concate them
+    
+    """
 
     df1 = pd.read_csv("WSL/data/iri2016/201301010000.txt", index_col = 0)
     df1.columns = [c.lower() for c in df1.columns]
@@ -98,3 +95,36 @@ def join_models_compute_conds():
     ds["hall"] =  hall
     
     ds.to_csv("2013010100002.txt")
+    
+    
+    
+# def main():
+infile = "D:\\iri2016\\" 
+data, coords = parameters_into_dict(infile)
+
+
+def update_data_vars(data):
+    data_vars = {}
+    
+    for key in data.keys():
+    
+        data_vars[key] = (
+            ["time", "lat", "lon"],
+                          data[key]
+                          )
+    
+    return data_vars
+
+times = pd.date_range("2013-1-1 00:00", "2013-1-1 23:50", freq = "10min")
+lon = coords["lon"]
+lat = coords["lat"]
+ds = xr.Dataset(update_data_vars(data))
+
+
+ds.coords["time"] = times
+ds.coords["lon"] = lon
+ds.coords["lat"] = lat
+
+
+print(ds)
+

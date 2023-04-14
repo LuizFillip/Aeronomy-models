@@ -99,7 +99,6 @@ for col in ["south", "north", "both"]:
             
             zeq = Apex(h).apex_height(mlat)
             
-            
             ne, te = get_ionos(dn, zeq, glat[i], glon[i])
             
             He, O, N2, O2, H, N, Tn = get_neutrals(
