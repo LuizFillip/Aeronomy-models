@@ -1,13 +1,16 @@
 import os
 import pandas as pd
 import xarray as xr
-import numpy as np
+import datetime as dt
 from FluxTube.src.core import get_conductivities
-
 from Models.src.utils import (sel_columns,  
                               create_dict,  
                               convert_to_array)
 
+
+def datetime_from_str(filename):
+    f = filename.replace(".txt", "")
+    return dt.datetime.strptime(f, "%Y%m%d%H%M")
 
 
 def load(infile, coord = "zon"):
@@ -36,6 +39,8 @@ def parameters_into_dict(infile):
     times = []
     
     for filename in files:
+        
+        times.append(datetime_from_str(filename))
 
         for coord in cols:
             df = load(os.path.join(
@@ -48,18 +53,33 @@ def parameters_into_dict(infile):
             
     coords = {
         "lon": lon,
-        "lat": lat
+        "lat": lat,
+        "time": times
               }
             
     return convert_to_array(data), coords
 
 
-def save_in_dataset(zon, mer):
+def save_in_dataset(infile):
 
-    lats = np.arange(-20, 20, 1)
-    lons = np.arange(-75, -25, 1)
-    
- 
+    data, coords = parameters_into_dict(infile)
+
+
+    def update_data_vars(data):
+        data_vars = {}
+        
+        for key in data.keys():
+        
+            data_vars[key] = (["time", "lat", "lon"], data[key])
+        
+        return data_vars
+
+
+    ds = xr.Dataset(update_data_vars(data))
+
+    ds.coords["time"] = coords["time"]
+    ds.coords["lon"] = coords["lon"]
+    ds.coords["lat"] = coords["lat"]
     
     return ds
 
@@ -98,33 +118,10 @@ def join_models_results(
     
     
     
-# def main():
-infile = "D:\\iri2016\\" 
-data, coords = parameters_into_dict(infile)
-
-
-def update_data_vars(data):
-    data_vars = {}
+def main():
+    infile = "D:\\iri2016\\" 
     
-    for key in data.keys():
+    ds = save_in_dataset(infile)
     
-        data_vars[key] = (
-            ["time", "lat", "lon"],
-                          data[key]
-                          )
-    
-    return data_vars
-
-times = pd.date_range("2013-1-1 00:00", "2013-1-1 23:50", freq = "10min")
-lon = coords["lon"]
-lat = coords["lat"]
-ds = xr.Dataset(update_data_vars(data))
-
-
-ds.coords["time"] = times
-ds.coords["lon"] = lon
-ds.coords["lat"] = lat
-
-
-print(ds)
+    print(ds)
 
