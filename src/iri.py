@@ -8,7 +8,7 @@ def point_iri(dn, zeq, glat, glon):
     Te = ds["Te"].values[0]
     return ne, Te
 
-class Ne:
+class ne_from_latitude:
     
     def __init__(
             self, 
@@ -63,3 +63,11 @@ class Ne:
     def chapman_layer(Ne, z):
         """Chapman layer model"""
         return Ne * np.exp(1.0 - z - np.exp(-z)) 
+    
+
+def altrange_iri(
+        dn, hmin, hmax, glat, glon
+        ):
+    ds = iri.IRI(dn, [hmin, hmax, 1], glat, glon)
+
+    return ds.where(ds.alt_km).to_dataframe()

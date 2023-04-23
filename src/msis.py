@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from nrlmsise00 import msise_flat
 from PlanetaryIndices import get_indices
+import datetime as dt
 
 def point_msis(dn, zeq, glat, glon):
     
@@ -72,7 +73,7 @@ def altrange_msis(
 def timerange_msis(
         dn, 
         glat, glon, 
-        fixed_alt = 300, 
+        altitude = 300, 
         periods = 67):
         
     out = []
@@ -83,10 +84,7 @@ def timerange_msis(
             freq = "10min"
             ):
         
-        ts = run_msise(
-            dn, 
-            hmin = fixed_alt, 
-            hmax = fixed_alt)
+        ts = point_msis(dn, altitude, glat, glon)
         
         ts.index = [dn]
         out.append(ts)
@@ -96,3 +94,51 @@ def timerange_msis(
 def main():
     site = "saa"
     glat, glon = sites[site]["coords"]
+    dn = dt.datetime(2013, 1, 1)
+    
+    df =  altrange_msis(
+            dn,
+            glat, 
+            glon,
+            hmin = 200, 
+            hmax = 500, 
+            step = 1, 
+            )
+    
+    df
+    
+    
+def concentrations_from_point(
+        tn, 
+        o_point, 
+        o2_point, 
+        n2_point, 
+        step,  
+        base_height = 200.0 
+        ):
+    
+
+    CO = np.zeros(len(tn))
+    CO2 = np.zeros(len(tn))                
+    CN2 = np.zeros(len(tn))                
+
+    
+    for i in range(0, len(tn)):
+        
+        Z1 = base_height + step * i
+        
+        GR = 1.0 / pow(1.0 + Z1 / 6370.0, 2)
+        
+        HO = 0.0528 * tn[i] / GR                               # scale height of O [km]
+        HO2 = 0.0264 * tn[i] / GR                              # scale height of O2 [km]
+        HN2 = 0.0302 * tn[i] / GR                              # scale height of N2 [km]
+
+        p_co = o_point / 5.33 * 8.55
+        p_co2 = o2_point / 1.67 * 4.44
+        p_cn2 = n2_point / 9.67 * 2.26
+
+        CO[i] = p_co * np.exp(-(Z1 - 335.0) / HO)           # atomic oxygen [cm-3]
+        CO2[i] = p_co2 * np.exp(-(Z1 - 335.0) / HO2)        # molecular oxygen [cm-3]
+        CN2[i] = p_cn2 * np.exp(-(Z1 - 335.0) / HN2) 
+    
+    return CO, CO2, CN2
