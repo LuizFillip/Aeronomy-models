@@ -84,38 +84,6 @@ def save_in_dataset(infile):
     return ds
 
 
-
-def join_models_results(
-        path_iri, 
-        path_msis,
-        filename):
-    
-    """
-    Get results grid from iri and msis and concate them
-    
-    """
-
-    df1 = pd.read_csv("WSL/data/iri2016/201301010000.txt", index_col = 0)
-    df1.columns = [c.lower() for c in df1.columns]
-    
-    df1 = df1.set_index(["lat", "lon"])
-    
-    
-    df = pd.read_csv("201301010000.txt", index_col = 0)
-    
-    df.columns = [c.lower() for c in df.columns]
-    
-    df = df.set_index(["lat", "lon"])
-    
-    ds = pd.concat([df, df1], axis = 1)
-    
-    hall, perd = get_conductivities(ds)
-    
-    ds["perd"] =  perd
-    ds["hall"] =  hall
-    
-    ds.to_csv("2013010100002.txt")
-    
     
     
 def main():

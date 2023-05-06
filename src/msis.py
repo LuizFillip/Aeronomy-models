@@ -37,13 +37,13 @@ def point_msis(dn, zeq, glat, glon):
 
 
 def altrange_msis(
-        dn,
-        glat, 
-        glon,
-        hmin = 200, 
-        hmax = 500, 
-        step = 1, 
-        ):
+       dn: dt.datetime,
+       glat: float, 
+       glon: float,
+       hmin: float = 200.0, 
+       hmax: float = 500.0, 
+       step: float = 1.0
+       ):
     
     alts = np.arange(hmin, hmax + step, step)
      
@@ -108,7 +108,7 @@ def main():
     df
     
     
-def concentrations_from_point(
+def con_from_point(
         tn, 
         o_point, 
         o2_point, 
@@ -117,6 +117,10 @@ def concentrations_from_point(
         base_height = 200.0 
         ):
     
+    """
+    Get concetrantions profiles from neutral constituints 
+    from point
+    """
 
     CO = np.zeros(len(tn))
     CO2 = np.zeros(len(tn))                

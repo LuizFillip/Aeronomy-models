@@ -55,4 +55,6 @@ def plot_ne_grad_profiles():
     plot_electron_density(ax[0], ds)
     plot_scale_gradient(ax[1], ds)
     
-plot_ne_grad_profiles()
+    return fig
+    
+fig = plot_ne_grad_profiles()

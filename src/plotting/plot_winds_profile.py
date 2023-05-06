@@ -2,8 +2,8 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from Base.src.winds import effective_wind
-from GEO.src.core import run_igrf
+from atmosphere import effective_wind
+from GEO import run_igrf
 import settings as s
 from utils import save_plot
 
@@ -13,15 +13,16 @@ def plot_winds_profiles(
         dn = dt.datetime(2013, 1, 1, 21, 0), 
         site = "São Luis"):
     
-    d, i = run_igrf(date = dn.year, 
+    d, i = run_igrf(year = dn.year, 
                     site = "saa", 
                     alt = 300)
     
     infile = "database/HWM/2013_profiles.txt"
 
     df = pd.read_csv(infile, index_col = 0)
+    
 
-    fig = plt.figure(figsize = (6, 4), dpi = 300)
+    fig = plt.figure(figsize = (8, 6), dpi = 300)
 
     ax = fig.add_subplot()
 
@@ -48,7 +49,7 @@ def plot_winds_profiles(
 
 
     ax.axvline(0, color = "k", lw = 0.5, linestyle = "--")
-
+    ax.axhline(300)
     dt_str = dn.strftime("%d/%m/%Y")
     
     
@@ -69,8 +70,8 @@ def plot_winds_profiles(
 
     return fig
 
-# fig = plot_winds_profiles(
-#         dn = dt.datetime(2013, 1, 1, 21, 0), 
-#         site = "São Luis")
+fig = plot_winds_profiles(
+        dn = dt.datetime(2013, 1, 1, 21, 0), 
+        site = "São Luis")
 
-save_plot(plot_winds_profiles)
+# save_plot(plot_winds_profiles)

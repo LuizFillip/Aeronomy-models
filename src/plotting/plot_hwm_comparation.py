@@ -68,6 +68,3 @@ def plot_hwm_comparation(
     
     return fig 
 
-df = load().HWM()
-dn = dt.date(2013, 1, 1)
-print(df.loc[df.index.date == dn].plot())

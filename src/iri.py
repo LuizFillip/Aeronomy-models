@@ -1,12 +1,8 @@
 import iri2016 as iri
 import numpy as np
+import datetime as dt
 
-def point_iri(dn, zeq, glat, glon):
-    ds = iri.IRI(dn, [zeq, zeq, 1], glat, glon)
-    
-    ne = ds["ne"].values[0]
-    Te = ds["Te"].values[0]
-    return ne, Te
+
 
 class ne_from_latitude:
     
@@ -65,9 +61,36 @@ class ne_from_latitude:
         return Ne * np.exp(1.0 - z - np.exp(-z)) 
     
 
-def altrange_iri(
-        dn, hmin, hmax, glat, glon
-        ):
-    ds = iri.IRI(dn, [hmin, hmax, 1], glat, glon)
+def point_iri(dn, zeq, glat, glon):
+    ds = iri.IRI(dn, [zeq, zeq, 1], glat, glon)
+    
+    ne = ds["ne"].values[0]
+    Te = ds["Te"].values[0]
+    return ne, Te
 
-    return ds.where(ds.alt_km).to_dataframe()
+
+def altrange_iri(
+        dn: dt.datetime,
+        glat: float, 
+        glon: float,
+        hmin: float = 200.0, 
+        hmax: float = 500.0, 
+        step: float = 1.0
+        ):
+    
+    ds = iri.IRI(dn, [hmin, hmax, step], glat, glon)
+    
+    df = ds.where(ds.alt_km).to_dataframe()
+    
+    df.index = df.index.get_level_values(0)
+    
+    return df.drop(columns = "Tn")
+
+
+def main():
+    ...
+    
+    dn = dt.datetime(2013, 1, 1)
+    ds = iri.IRI(dn, [80, 700, 5], -2.3, -40)
+    
+    ds["ne"].plot()
