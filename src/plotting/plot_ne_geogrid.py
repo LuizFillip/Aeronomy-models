@@ -1,13 +1,13 @@
 import pandas as pd
 import datetime as dt
 import settings as s
-from GEO.src.mapping import quick_map
+from GEO import quick_map
 from GEO.src.plotting.plot_apex_range_over_meridian import plot_site_and_closest_meridian
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 from Models.src.load_results import load
-from Models.src.core import sites
+from GEO import sites
 
 import os
 from GEO.src.terminator import terminator
@@ -34,8 +34,12 @@ def plot_terminator(ax, dn):
             linestyle = "--", color = "white")
 
 def plot_contours(ax, df, parameter):
-    img = ax.contourf(df.columns, df.index, 
-        df.values, 50, cmap = "rainbow")
+    
+    img = ax.contourf(
+        df.columns, 
+        df.index, 
+        df.values, 50, cmap = "rainbow"
+        )
     
     vls = df.values.flatten()
     
@@ -52,8 +56,7 @@ def plot_ne_geogrid(infile, parameter = "Tn"):
     fig, ax = plt.subplots(
         figsize = (8, 8), 
         dpi = 300, 
-        subplot_kw = 
-        {'projection': ccrs.PlateCarree()}
+        subplot_kw = {'projection': ccrs.PlateCarree()}
         )
     
     s.config_labels(fontsize = 15)
@@ -65,16 +68,13 @@ def plot_ne_geogrid(infile, parameter = "Tn"):
     
     s.config_labels()
     
-    
     df = load(infile, coord = parameter)
     
     plot_contours(ax, df, parameter = parameter)
     
     plot_terminator(ax, dn)
     
-    plot_site_and_closest_meridian(
-            ax, 
-            site = "saa")
+    plot_site_and_closest_meridian(ax, site = "saa")
     
     ax.set(title = f"{dn} - 300 km")
     
@@ -83,13 +83,9 @@ def plot_ne_geogrid(infile, parameter = "Tn"):
 
 
 #infile = "WSL/data/iri2016/201301010000.txt"
-infile = "201301010000.txt"
-parameter = "O"
-plot_ne_geogrid(infile, parameter = parameter)
 
-# df = load(infile, coord = parameter)
-# vls = df.values.flatten()
-# ticks = np.linspace(round(min(vls)), round(max(vls)), 10)
-
-# ticks
+def main():
+    infile = "201301010000.txt"
+    parameter = "O"
+    plot_ne_geogrid(infile, parameter = parameter)
 

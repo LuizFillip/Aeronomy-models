@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime as dt
-import setup as s
-from RayleighTaylor.src.common import load
+import settings as s
+from labels import Labels
 
 
 def plot_iono_part(ax, ion):
@@ -19,12 +19,9 @@ def plot_iono_part(ax, ion):
     ax1.axhline(0, color = "r")
 
 
-fig, ax = plt.subplots(figsize = (8, 4))
+fig, ax = plt.subplots(
+    dpi = 300, figsize = (8, 4)
+    )
 
-ts = load()
 
 ne_file = "database/IRI/SAA/20130101.txt"
-
-df = ts.ne(ne_file, alt = 300)
-
-plot_iono_part(ax, df)
