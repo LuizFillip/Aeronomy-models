@@ -102,10 +102,10 @@ def timeseries_iri():
               dn, glat, glon,
               hmin = 250, hmax = 350,
               step = 10)
-    
-        df["dn"] = dn
         df["alt"] = df.index
-        df = df.set_index(df["dn"])
+        df.index = [dn] * len(df)
+        
+        #df = df.set_index(df["dn"])
         out.append(df)
         
     

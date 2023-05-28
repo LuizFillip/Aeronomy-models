@@ -60,4 +60,4 @@ def plot_ne_grad_profiles():
     
     return fig
     
-fig = plot_ne_grad_profiles()
+# fig = plot_ne_grad_profiles()
