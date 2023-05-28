@@ -1,7 +1,7 @@
 import iri2016 as iri
 import numpy as np
 import datetime as dt
-
+from GEO import sites
 
 
 class ne_from_latitude:
@@ -87,10 +87,30 @@ def altrange_iri(
     return df.drop(columns = "Tn")
 
 
-def main():
-    ...
+import pandas as pd
+
+def timeseries_iri():
+    glat, glon = sites["saa"]["coords"]
+    out = []
     
-    dn = dt.datetime(2013, 1, 1)
-    ds = iri.IRI(dn, [80, 700, 5], -2.3, -40)
+    for dn in pd.date_range(
+            dt.datetime(2013, 3, 16), 
+            dt.datetime(2013, 3, 20), 
+            freq = "20min"):
+        
+        df = altrange_iri(
+              dn, glat, glon,
+              hmin = 250, hmax = 350,
+              step = 10)
     
-    ds["ne"].plot()
+        df["dn"] = dn
+        df["alt"] = df.index
+        df = df.set_index(df["dn"])
+        out.append(df)
+        
+    
+    ds = pd.concat(out)
+
+    ds.to_csv("database/IRI/march_2013.txt") 
+
+timeseries_iri()
