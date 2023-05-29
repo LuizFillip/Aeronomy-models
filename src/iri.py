@@ -2,6 +2,7 @@ import iri2016 as iri
 import numpy as np
 import datetime as dt
 from GEO import sites
+import pandas as pd
 
 
 class ne_from_latitude:
@@ -87,10 +88,9 @@ def altrange_iri(
     return df.drop(columns = "Tn")
 
 
-import pandas as pd
 
-def timeseries_iri():
-    glat, glon = sites["saa"]["coords"]
+def timeseries_iri(site = "saa"):
+    glat, glon = sites[site]["coords"]
     out = []
     
     for dn in pd.date_range(
@@ -104,13 +104,12 @@ def timeseries_iri():
               step = 10)
         df["alt"] = df.index
         df.index = [dn] * len(df)
-        
-        #df = df.set_index(df["dn"])
+    
         out.append(df)
         
     
     ds = pd.concat(out)
 
     ds.to_csv("database/IRI/march_2013.txt") 
-
-timeseries_iri()
+    
+    return df
