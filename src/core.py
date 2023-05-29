@@ -12,6 +12,7 @@ def altrange_models(**kargs):
 
 def point_models(**kwargs):
     """Ne, Te, He, O, N2, O2, H, N, Tn"""
-    return point_iri(**kwargs) + point_msis(**kwargs)
+
+    return {**point_iri(**kwargs), **point_msis(**kwargs)}
 
 

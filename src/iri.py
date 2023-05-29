@@ -67,7 +67,7 @@ def point_iri(dn, zeq, glat, glon):
     
     ne = ds["ne"].values[0]
     Te = ds["Te"].values[0]
-    return ne, Te
+    return {"ne": ne, "te": Te}
 
 
 def altrange_iri(

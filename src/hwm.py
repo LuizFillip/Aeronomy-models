@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun May 28 19:24:04 2023
-
-@author: Luiz
-"""
 
 import matplotlib.pyplot as plt
 import FabryPerot as fp
@@ -29,10 +23,33 @@ def load_hwm(ds, alt = 250, site = "car"):
 
     return df.loc[sit_cond & alt_cond & idx_cond]
 
+import numpy as np
 
-def correct_slips():
-    path = 'database/FabryPerot/2012/minime01_car_20130316.cedar.005.txt'
-    # main()
-    ds = fp.FPI(path).wind
+def correct_cycle_slips(phases):
+    unwrapped_phases = np.unwrap(phases)
+    diff_phases = np.diff(unwrapped_phases)
+    cycle_slip_indices = np.where(np.abs(diff_phases) > np.pi)[0] + 1
 
-    shift = df["zon"].diff()
+    for index in cycle_slip_indices:
+        diff = unwrapped_phases[index] - unwrapped_phases[index - 1]
+        cycles = np.round(diff / (2 * np.pi))
+        unwrapped_phases[index:] -= cycles * 2 * np.pi
+
+    return unwrapped_phases
+
+
+def main():
+    # Example phase measurements with cycle slips
+    phases = np.array([1.0, 2.0, -3.0, -2.0, 4.0, 5.0, -6.0, -5.0])
+    
+    # Correct cycle slips
+    corrected_phases = correct_cycle_slips(phases)
+    
+    print("Original Phases:", phases)
+    print("Corrected Phases:", corrected_phases)
+    def correct_slips():
+        path = 'database/FabryPerot/2012/minime01_car_20130316.cedar.005.txt'
+        # main()
+        ds = fp.FPI(path).wind
+    
+        shift = df["zon"].diff()
