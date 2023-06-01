@@ -73,29 +73,26 @@ def altrange_msis(
 
 def timerange_msis(
         dn, 
-        glat, glon, 
+        site = "car", 
         altitude = 300, 
-        periods = 67):
+        periods = 67, 
+        parameter = "Tn"):
+    
+    glat, glon = sites[site]["coords"]
         
     out = []
-    for dn in pd.date_range(
+    times =  pd.date_range(
             dn, 
-            glat, glon,
             periods = periods, 
             freq = "10min"
-            ):
+            )
+    for dn in times:
         
         ts = point_msis(dn, altitude, glat, glon)
         
-        ts.index = [dn]
-        out.append(ts)
+        out.append(ts[parameter])
     
-    return pd.concat(out)
+    return pd.DataFrame({parameter: out}, index = times)
 
-def main():
-    site = "saa"
-    glat, glon = sites[site]["coords"]
-    dn = dt.datetime(2013, 1, 1)
-    zeq = 300
-        
-    point_msis(dn, zeq, glat, glon)
+
+    
