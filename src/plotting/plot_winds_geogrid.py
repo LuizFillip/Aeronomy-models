@@ -75,13 +75,14 @@ def plot_colorbar(
         )
     cb.set_label(label, fontsize = fontsize)
 
-infile = "database/HWM/grid_2013_03.txt"
-ds = pd.read_csv(infile)
 
-ds["dn"] = pd.to_datetime(ds["dn"])
 
-def plot_winds_geogrid(ds, coord = "mer", 
-                       fontsize = 40):
+def plot_winds_geogrid(
+        ds, 
+        coord = "mer", 
+        fontsize = 40
+        ):
+    
     fig, ax = plt.subplots( 
           figsize = (20, 15),
           dpi = 300, 
@@ -92,13 +93,10 @@ def plot_winds_geogrid(ds, coord = "mer",
           subplot_kw = {'projection': ccrs.PlateCarree()}
           )
     
-    
     plt.subplots_adjust(hspace = 0.2, wspace = 0.001)
-    
     
     vmin = round(ds[coord].min())
     vmax = round(ds[coord].max())
-    
     
     vlats = dict(min = -30, max = 10, stp = 5)
     vlons = dict(min = -60, max = -30, stp = 5)   
@@ -148,7 +146,12 @@ def plot_winds_geogrid(ds, coord = "mer",
     
     return fig
 
-f= plot_winds_geogrid(ds, coord = "mer", 
+infile = "database/HWM/grid_2013_03.txt"
+ds = pd.read_csv(infile)
+
+ds["dn"] = pd.to_datetime(ds["dn"])
+
+f = plot_winds_geogrid(ds, coord = "mer", 
                        fontsize = 40)
 
 f.savefig("models/figures/windsgrid.png", dpi = 300)
