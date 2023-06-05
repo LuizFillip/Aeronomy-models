@@ -95,4 +95,24 @@ def timerange_msis(
     return pd.DataFrame({parameter: out}, index = times)
 
 
+def timeseries():
+    site = "car" 
+    altitude = 300
+    periods = 67 
+    parameter = "Tn"
     
+    glat, glon = sites[site]["coords"]
+        
+    out = []
+    times =  pd.date_range(dt.datetime(2013, 3, 15, 0), 
+                           dt.datetime(2013, 3, 21, 0), 
+                           freq = '10min',
+            )
+    for dn in times:
+        
+        print(dn)    
+        out.append(point_msis(dn, altitude, glat, glon))
+     
+    ds = pd.DataFrame({parameter: out}, index = times)
+    
+    ds.to_csv('msis_in.txt')

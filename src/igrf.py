@@ -1,13 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 31 15:19:06 2023
-
-@author: Luiz
-"""
-
 import pyIGRF
 import pandas as pd
-from GEO import sites
+from GEO import sites, year_fraction
 
 
 def load_igrf(df, site = "saa"):

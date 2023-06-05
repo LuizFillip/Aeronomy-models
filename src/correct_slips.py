@@ -36,16 +36,15 @@ def correct_cycle_slips(phases):
 
     return unwrapped_phases
 
-
+#%%
 correct =correct_cycle_slips(df["Tn"])
 
 fig, ax = plt.subplots()
 
 ax.plot(df["Tn"])
 
-
 from common import load
-infile = "database/MSIS/concentrations.txt"
+infile = "database/MSIS/cont_msis.txt"
 
 ds = load(
         infile, 
@@ -53,4 +52,4 @@ ds = load(
         end = dt.datetime(2013, 3, 17, 7)
         )
 
-ds["tn"].plot()
+ax.plot(ds["Tn"])
