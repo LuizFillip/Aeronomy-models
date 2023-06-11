@@ -4,6 +4,7 @@ import FabryPerot as fp
 import models as m
 import pandas as pd
 import datetime as dt
+from common import load
 
 
 def demonstrated():
@@ -19,13 +20,9 @@ def demonstrated():
 
 path = 'database/FabryPerot/2012/minime01_car_20130318.cedar.005.txt'
 tp = fp.FPI(path).temp
-# ds = m.load_hwm(wd, alt = 250, site = "caj")
-dn = dt.datetime(2013, 3, 16, 20)
-df = m.timerange_msis(dn, site = "car")
 
-
-def correct_cycle_slips(phases):
-    unwrapped_phases = np.unwrap(phases)
+def correct_cycle_slips(unwrapped_phases):
+    # unwrapped_phases = np.unwrap(phases)
     diff_phases = np.diff(unwrapped_phases)
     cycle_slip_indices = np.where(np.abs(diff_phases) > np.pi)[0] + 1
 
@@ -36,20 +33,34 @@ def correct_cycle_slips(phases):
 
     return unwrapped_phases
 
-#%%
-correct =correct_cycle_slips(df["Tn"])
+
+# 
 
 fig, ax = plt.subplots()
 
-ax.plot(df["Tn"])
 
-from common import load
-infile = "database/MSIS/cont_msis.txt"
+df = pd.read_csv('test_temp.txt', index_col=0)
+df.index = pd.to_datetime(df.index)
 
-ds = load(
-        infile, 
-        start = dt.datetime(2013, 3, 16, 20), 
-        end = dt.datetime(2013, 3, 17, 7)
-        )
+# 
 
-ax.plot(ds["Tn"])
+
+
+vls = df['Tn'].values
+
+diff = np.diff(vls)
+
+threshold = 10
+for i, v in enumerate(diff):
+    if diff[i] > threshold:
+        cycle = (vls[i] - vls[i + 1])
+        index = i
+print
+df['cTn'] = vls
+
+
+ax.plot(df['cTn'])
+ax.plot(df['Tn'])
+
+
+len(vls), len(diff)

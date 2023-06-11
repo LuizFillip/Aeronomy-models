@@ -3,6 +3,7 @@ import numpy as np
 import datetime as dt
 from GEO import sites
 import pandas as pd
+import ionosphere as io
 
 
 class ne_from_latitude:
@@ -91,25 +92,25 @@ def altrange_iri(
 
 def timeseries_iri(site = "saa"):
     glat, glon = sites[site]["coords"]
-    out = []
-    
-    for dn in pd.date_range(
+    times = pd.date_range(
             dt.datetime(2013, 3, 16), 
             dt.datetime(2013, 3, 20), 
-            freq = "20min"):
-        
-        df = altrange_iri(
-              dn, glat, glon,
-              hmin = 250, hmax = 350,
-              step = 10)
-        df["alt"] = df.index
-        df.index = [dn] * len(df)
+            freq = "10min")
     
-        out.append(df)
+    for dn in times:
+        print(dn)
+        ds = altrange_iri(
+                      dn, glat, glon,
+                      hmin = 200, 
+                      hmax = 500,
+                      step = 10)
         
-    
-    ds = pd.concat(out)
+        ds['L'] = io.scale_gradient(ds['ne'], ds.index)
+        ds["alt"] = ds.index
+        ds.index = [dn] * len(ds)
 
     ds.to_csv("database/IRI/march_2013.txt") 
     
-    return df
+    return ds
+
+timeseries_iri(site = "saa")
