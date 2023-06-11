@@ -23,3 +23,22 @@ def load_igrf(df, site = "saa"):
             out[key].append(vars()[key])
   
     return pd.DataFrame(out, index = df.index)
+
+
+def run_igrf(df, dn):
+    dec = []
+    inc = []
+    total = []
+    for lat, lon, alt in zip(df.glat, df.glon, df.alt):
+        d, i, _, _, _, _, f = pyIGRF.igrf_value(
+            lat, 
+            lon, 
+            alt = alt, 
+            year = year_fraction(dn)
+            )
+        
+        dec.append(d)
+        inc.append(i)
+        total.append(f)
+        
+    return dec, inc, total

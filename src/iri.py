@@ -91,11 +91,16 @@ def altrange_iri(
 
 
 def timeseries_iri(site = "saa"):
+    
     glat, glon = sites[site]["coords"]
+    
     times = pd.date_range(
             dt.datetime(2013, 3, 16), 
             dt.datetime(2013, 3, 20), 
             freq = "10min")
+    
+    
+    out = []
     
     for dn in times:
         print(dn)
@@ -103,14 +108,18 @@ def timeseries_iri(site = "saa"):
                       dn, glat, glon,
                       hmin = 200, 
                       hmax = 500,
-                      step = 10)
+                      step = 10
+                      )
         
         ds['L'] = io.scale_gradient(ds['ne'], ds.index)
         ds["alt"] = ds.index
         ds.index = [dn] * len(ds)
+        
+        out.append(ds)
 
-    ds.to_csv("database/IRI/march_2013.txt") 
+    return pd.concat(out)
+
+def main():
+    ds = timeseries_iri(site = "saa")
     
-    return ds
-
-timeseries_iri(site = "saa")
+    ds.to_csv("database/IRI/march_2013.txt") 

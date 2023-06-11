@@ -5,6 +5,7 @@ from .iri import (point_iri,
 from .msis import altrange_msis, timerange_msis, point_msis
 from .core import altrange_models, point_models
 from .hwm import load_hwm
+from .igrf import run_igrf
 import settings as s
 
 s.config_labels()
