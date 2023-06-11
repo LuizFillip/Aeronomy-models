@@ -4,6 +4,7 @@ import numpy as np
 from nrlmsise00 import msise_flat
 from PlanetaryIndices import get_indices
 import datetime as dt
+import models as mm
 
 def point_msis(dn, zeq, glat, glon):
     
@@ -76,7 +77,8 @@ def timerange_msis(
         site = "car", 
         altitude = 300, 
         periods = 67, 
-        parameter = "Tn"):
+        parameter = "Tn", 
+        correct = True):
     
     glat, glon = sites[site]["coords"]
         
@@ -91,8 +93,13 @@ def timerange_msis(
         ts = point_msis(dn, altitude, glat, glon)
         
         out.append(ts[parameter])
+    df = pd.DataFrame({parameter: out}, index = times)
     
-    return pd.DataFrame({parameter: out}, index = times)
+    if correct:
+        for col in df.columns:
+            df[col] = mm.correct_and_smooth(df[col])
+    
+    return df
 
 
 def timeseries():
