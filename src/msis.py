@@ -101,9 +101,3 @@ def timerange_msis(
     
     return df
 
-
-# dn = dt.datetime(2013, 3, 26, 20)
-
-# ds = timerange_msis(dn, site = 'caj')
-
-# ds = ds['Tn'].plot()

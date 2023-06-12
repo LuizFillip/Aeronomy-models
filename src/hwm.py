@@ -6,7 +6,7 @@ import datetime as dt
 
 def load_hwm(ds, alt = 250, site = "car"):
     
-    infile = "database/HWM/winds_all_sites.txt"
+    infile = f"database/HWM/winds_{site}.txt"
     
     df = pd.read_csv(infile, index_col = 0)
     
@@ -19,18 +19,14 @@ def load_hwm(ds, alt = 250, site = "car"):
         
         idx_cond = ((df.index >= ds[0]) & 
                     (df.index <= ds[-1]))
-    
-    sit_cond = (df["site"] == site)
-    
+        
     alt_cond = (df["alt"] == alt)
     
-    df = df.loc[sit_cond & alt_cond & idx_cond]
+    df = df.loc[alt_cond & idx_cond, ['mer', 'zon']]
     
-    for col in df.columns:
+    for col in ['zon', 'mer']:
         df[col] = mm.correct_and_smooth(df[col])
 
     return df
-
-
 
 
