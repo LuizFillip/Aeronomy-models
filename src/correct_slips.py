@@ -17,8 +17,10 @@ def correct_slip(vls, ts = 1):
     
     index = find_index(diff, ts = ts)
     
-    cycle = vls[index] - vls[index + 1]
-    vls[index + 1:] += cycle
+    if index is not None:
+        cycle = vls[index] - vls[index + 1]
+        vls[index + 1:] += cycle
+        
     return vls
 
 
