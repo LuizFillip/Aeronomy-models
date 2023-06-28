@@ -3,3 +3,5 @@
 /src/plotting/__pycache__/*
 /src/tests/__pycache__/*
 __init__.py
+/figures/
+*.png
