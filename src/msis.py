@@ -5,6 +5,10 @@ from nrlmsise00 import msise_flat
 from PlanetaryIndices import get_indices
 import datetime as dt
 import models as mm
+import datetime as dt
+import ionosphere as io
+import atmosphere as atm
+
 
 def point_msis(dn, zeq, glat, glon):
     
@@ -82,7 +86,11 @@ def timerange_msis(
     
     glat, glon = sites[site]["coords"]
         
-    out = []
+    out = {'Tn' : [], 
+           'O': [], 
+           'O2': [], 
+           'N2': [], 
+           }
     times =  pd.date_range(
             dn, 
             periods = periods, 
@@ -91,9 +99,10 @@ def timerange_msis(
     for dn in times:
         
         ts = point_msis(dn, altitude, glat, glon)
-        
-        out.append(ts[parameter])
-    df = pd.DataFrame({parameter: out}, index = times)
+        for key in out.keys():
+            out[key].append(ts[key])
+            
+    df = pd.DataFrame(out, index = times)
     
     if correct:
         for col in df.columns:
@@ -101,3 +110,30 @@ def timerange_msis(
     
     return df
 
+def run_all_year():
+    
+
+    dates = pd.date_range(dt.datetime(2013, 1, 1, 20), 
+                          dt.datetime(2014, 1, 1, 20), 
+                          freq = '1D')
+    out = []
+    for dn in dates:
+        print(dn)
+        df = timerange_msis(dn, site = 'saa')
+        
+        nu = io.collision_frequencies()
+        
+        df['nui'] = nu.ion_neutrals(
+            df["Tn"], df["O"], 
+            df["O2"], df["N2"]
+            )
+        df["R"] = atm.recombination2(df["O2"], df["N2"])
+        
+        out.append(df.loc[:, ['nui', 'R']])
+        
+        
+    ds = pd.concat(out)
+    
+    ds.to_csv('rates.txt')
+    
+# run_all_year()

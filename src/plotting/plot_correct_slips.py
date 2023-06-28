@@ -1,14 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jun 11 18:39:12 2023
-
-@author: Luiz
-"""
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import settings as s
-
+from utils import smooth
+import models as mm
 
 def plot_result():
     df = pd.read_csv('test_temp.txt', index_col=0)
