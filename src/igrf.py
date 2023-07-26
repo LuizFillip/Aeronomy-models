@@ -25,7 +25,10 @@ def load_igrf(df, site = "saa"):
     return pd.DataFrame(out, index = df.index)
 
 
-def run_igrf(df, dn):
+def run_igrf(df):
+    
+    dn = pd.to_datetime(df['dn'].values[0])
+    
     dec = []
     inc = []
     total = []
@@ -41,4 +44,11 @@ def run_igrf(df, dn):
         inc.append(i)
         total.append(f)
         
-    return dec, inc, total
+        
+    df["d"] = dec
+    df["i"] = inc
+    df["Bf"] = total 
+    
+    df['Bf'] = df['Bf'] * 1e-9
+        
+    return df
