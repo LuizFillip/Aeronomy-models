@@ -2,7 +2,7 @@ from GEO import sites
 import pandas as pd
 import numpy as np
 from nrlmsise00 import msise_flat
-from PlanetaryIndices import get_indices
+from geophysical_indices import get_indices
 import datetime as dt
 import models as mm
 import datetime as dt

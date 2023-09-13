@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import xarray as xr
 import datetime as dt
-from FluxTube.src.core import get_conductivities
 from Models.src.utils import (sel_columns,  
                               create_dict,  
                               convert_to_array)
@@ -70,7 +69,8 @@ def save_in_dataset(infile):
         
         for key in data.keys():
         
-            data_vars[key] = (["time", "lat", "lon"], data[key])
+            data_vars[key] = (
+                ["time", "lat", "lon"], data[key])
         
         return data_vars
 
@@ -85,11 +85,5 @@ def save_in_dataset(infile):
 
 
     
-    
-def main():
-    infile = "D:\\iri2016\\" 
-    
-    ds = save_in_dataset(infile)
-    
-    print(ds)
+
 
