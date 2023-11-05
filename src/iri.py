@@ -103,7 +103,7 @@ def timeseries_iri(site = "saa"):
     out = []
     
     for dn in times:
-        print(dn)
+
         ds = altrange_iri(
                       dn, glat, glon,
                       hmin = 200, 
@@ -119,7 +119,37 @@ def timeseries_iri(site = "saa"):
 
     return pd.concat(out)
 
-def main():
-    ds = timeseries_iri(site = "saa")
+
+def build_dataset(glat, dn):
     
-    ds.to_csv("database/IRI/march_2013.txt") 
+    ds = iri.IRI(dn, [75, 500, 20], glat, -45)
+    
+    df = ds.where(ds.alt_km).to_dataframe()
+    
+    df.index = df.index.get_level_values(0)
+    
+    df['dn'] = dn
+    
+    return df
+
+from tqdm import tqdm 
+
+
+def run():
+
+    times = pd.date_range(
+            dt.datetime(2013, 1, 1, 20), 
+            dt.datetime(2013, 1, 2, 7), 
+            freq = "10min")
+    
+    out = []
+    for dn in tqdm(times):
+        
+        for glat in range(-20, 21, 1):
+            
+            out.append(build_dataset(glat, dn))
+            
+    
+    df = pd.concat(out)
+    save_in = 'models/temp/iri.txt'
+    df.to_csv(save_in)
