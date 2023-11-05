@@ -25,9 +25,14 @@ def load_igrf(df, site = "saa"):
     return pd.DataFrame(out, index = df.index)
 
 
-def run_igrf(df):
+def magnetic_parameters(df):
     
-    dn = pd.to_datetime(df['dn'].values[0])
+    try:
+        dn = df['dn'].values[0]
+    except:
+        dn = df.index[0]
+        
+    dn = pd.to_datetime(dn)
     
     dec = []
     inc = []

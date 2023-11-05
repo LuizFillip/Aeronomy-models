@@ -11,5 +11,5 @@ from .msis import (
     )
 from .core import altrange_models, point_models
 from .hwm import load_hwm
-from .igrf import run_igrf
+from .igrf import magnetic_parameters
 from .correct_slips import correct_and_smooth
