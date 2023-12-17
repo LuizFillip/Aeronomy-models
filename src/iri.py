@@ -3,7 +3,8 @@ import numpy as np
 import datetime as dt
 from GEO import sites
 import pandas as pd
-import ionosphere as io
+import aeronomy as io
+from tqdm import tqdm 
 
 
 class ne_from_latitude:
@@ -132,7 +133,6 @@ def build_dataset(glat, dn):
     
     return df
 
-from tqdm import tqdm 
 
 
 def run():

@@ -2,9 +2,32 @@ import os
 import pandas as pd
 import xarray as xr
 import datetime as dt
-from Models.src.utils import (sel_columns,  
-                              create_dict,  
-                              convert_to_array)
+import numpy as np
+
+
+def sel_columns(df):
+
+    cols = list(df.columns)
+        
+    return [i for i in cols if i not in ["lat", "lon"]]
+
+
+
+def create_dict(cols):
+    out = {}
+    
+    for i in range(len(cols)):
+        out[cols[i]] = []
+
+    return out
+
+def convert_to_array(out):
+     for key in out.keys():
+         out[key] =  np.array(out[key])
+     return out
+
+
+
 
 
 def datetime_from_str(filename):
