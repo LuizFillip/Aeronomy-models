@@ -154,4 +154,20 @@ def run():
     save_in = 'models/temp/iri.txt'
     df.to_csv(save_in)
     
+def build_map():
     
+    dn = dt.datetime(2013, 1, 24, 22,0)
+    
+    out = []
+    for glon in tqdm(np.arange(-90, -29, 1)):
+        for glat in np.arange(-30, 20, 1):
+            ds = iri.IRI(dn, [300, 300, 1], int(glat), int(glon))
+            
+            out.append([glon, glat, ds['ne'].item()])
+            
+            
+    df = pd.DataFrame(np.array(out))
+    
+    save = 'models/temp/map_iri.txt'
+    
+    df.to_csv(save)
