@@ -2,6 +2,7 @@
 /src/__pycache__/*
 /src/plotting/__pycache__/*
 /src/tests/__pycache__/*
+temp/*
 __init__.py
 /figures/
 *.png
