@@ -5,7 +5,7 @@ from GEO import sites
 import pandas as pd
 import aeronomy as io
 from tqdm import tqdm 
-
+import GEO as gg
 
 class ne_from_latitude:
     
@@ -171,3 +171,27 @@ def build_map():
     save = 'models/temp/map_iri.txt'
     
     df.to_csv(save)
+    
+
+
+
+
+dn = dt.datetime(2013, 12, 24, 22)
+
+
+def Equator_profiles(dn):
+
+    glon, glat, x, y = gg.load_meridian(dn.year)
+    
+    
+    ds = altrange_iri(
+                   dn, glat, glon,
+                   hmin = 100, 
+                   hmax = 500,
+                   step = 10
+                   )
+     
+    ds['L'] = io.scale_gradient(ds['ne'], ds.index)
+    ds["alt"] = ds.index
+    
+    return ds

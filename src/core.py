@@ -1,18 +1,34 @@
-from .msis import point_msis, altrange_msis
-from .iri import  point_iri, altrange_iri
+import models as m 
 import pandas as pd
+import GEO as gg
+import datetime as dt
+
 
 def altrange_models(**kargs):
     
-    iri = altrange_iri(**kargs)
+    iri = m.altrange_iri(**kargs)
     
-    msi = altrange_msis(**kargs)
+    msi = m.altrange_msis(**kargs)
     
     return pd.concat([msi, iri], axis = 1)
 
 def point_models(**kwargs):
     """Ne, Te, He, O, N2, O2, H, N, Tn"""
 
-    return {**point_iri(**kwargs), **point_msis(**kwargs)}
+    return {**m.point_iri(**kwargs), **m.point_msis(**kwargs)}
+
+
+
+def kargs(dn, hmin = 100, hmax = 500, step = 10):
+  glon, glat, x, y = gg.load_meridian(dn.year)
+  return dict(
+      dn = dn, 
+      glat = glat, 
+      glon = glon, 
+      hmin = hmin, 
+      hmax = hmax, 
+      step = step
+      )
+  
 
 
