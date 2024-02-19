@@ -2,7 +2,8 @@ from .iri import (
     point_iri, 
     altrange_iri, 
     ne_from_latitude, 
-    timeseries_iri, Equator_profiles
+    build_IRI_dataset, 
+    Equator_profiles
     )
 from .msis import (
     altrange_msis, 
