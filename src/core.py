@@ -74,12 +74,12 @@ def point_models(**kwargs):
             **point_msis(**kwargs), 
             **point_igrf(**kwargs)}
 
-def main():
-    kwargs = dict(
-        dn = dt.datetime(2013, 1, 1, 0, 0), 
-        glat = -11,
-        glon = -80,
-        alt = 300
-        )
-    
-    point_models(**kwargs)
+# def main():
+# kwargs = dict(
+#     dn = dt.datetime(2013, 1, 1, 0, 0), 
+#     glat = -11,
+#     glon = -80,
+#     alt = 300
+#     )
+
+# point_models(**kwargs)

@@ -1,4 +1,3 @@
-from .igrf import point_igrf
 from .iri import build_IRI_dataset
 from .msis import altrange_msis, timerange_msis
 from .core import point_models
