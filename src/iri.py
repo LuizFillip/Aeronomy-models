@@ -64,8 +64,8 @@ class ne_from_latitude:
         return Ne * np.exp(1.0 - z - np.exp(-z)) 
     
 
-def point_iri(dn, zeq, glat, glon):
-    ds = iri.IRI(dn, [zeq, zeq, 1], glat, glon)
+def point_iri(dn, glat, glon, alt):
+    ds = iri.IRI(dn, [alt, alt, 1], glat, glon)
     
     ne = ds["ne"].values[0]
     Te = ds["Te"].values[0]
@@ -121,39 +121,30 @@ def timeseries_iri(site = "saa"):
     return pd.concat(out)
 
 
-def build_dataset(glat, dn):
+
+def build_IRI_dataset(dn, glat, glon):
     
-    ds = iri.IRI(dn, [75, 500, 20], glat, -45)
-    
+    ds = iri.IRI(dn, [280, 320, 1], 
+                 float(glat), 
+                 float(glon))
+
     df = ds.where(ds.alt_km).to_dataframe()
-    
+
     df.index = df.index.get_level_values(0)
-    
+
+    df['L'] = io.scale_gradient(df['ne'], df.index)
+
+    cols = [
+        'ne', 'Tn', 'Ti', 'Te', 'dn',
+        'NmF2', 'hmF2', 'foF2', 'L']
+
     df['dn'] = dn
     
-    return df
+    return df.loc[df.index == 300, cols].set_index('dn')
 
 
-
-def run():
-
-    times = pd.date_range(
-            dt.datetime(2013, 1, 1, 20), 
-            dt.datetime(2013, 1, 2, 7), 
-            freq = "10min")
     
-    out = []
-    for dn in tqdm(times):
-        
-        for glat in range(-20, 21, 1):
-            
-            out.append(build_dataset(glat, dn))
-            
-    
-    df = pd.concat(out)
-    save_in = 'models/temp/iri.txt'
-    df.to_csv(save_in)
-    
+   
 def build_map():
     
     dn = dt.datetime(2013, 1, 24, 22,0)
@@ -174,11 +165,6 @@ def build_map():
     
 
 
-
-
-dn = dt.datetime(2013, 12, 24, 22)
-
-
 def Equator_profiles(dn):
 
     glon, glat, x, y = gg.load_meridian(dn.year)
@@ -195,3 +181,7 @@ def Equator_profiles(dn):
     ds["alt"] = ds.index
     
     return ds
+
+
+# dn = dt.datetime(2013, 12, 24, 22)
+
