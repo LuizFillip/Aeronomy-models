@@ -1,21 +1,12 @@
 import pyIGRF
 import pandas as pd
-from GEO import sites, year_fraction
+import GEO as gg
 
-def point_igrf(dn, glat, glon, alt):
-    
-    d, i, _, _, _, _, f = pyIGRF.igrf_value(
-        glat, 
-        glon, 
-        alt = alt, 
-        year = gg.year_fraction(dn)
-        ) 
-    return {'d': d, 'i': i, 'Bf': f * 1e-9}
 
 
 def load_igrf(df, site = "saa"):
    
-    lat, lon = sites[site]["coords"]
+    lat, lon = gg.sites[site]["coords"]
     
     out = {"D": [], "H": [], "Z": [], 
            "I": [], "F": [], "X": [], 
@@ -26,7 +17,7 @@ def load_igrf(df, site = "saa"):
             lat, 
             lon, 
             alt = 0, 
-            year = year_fraction(dn)
+            year = gg.year_fraction(dn)
             )
         
         for key in out.keys():
@@ -52,7 +43,7 @@ def magnetic_parameters(df):
             lat, 
             lon, 
             alt = alt, 
-            year = year_fraction(dn)
+            year = gg.year_fraction(dn)
             )
         
         dec.append(d)
@@ -67,14 +58,3 @@ def magnetic_parameters(df):
     df['Bf'] = df['Bf'] * 1e-9
         
     return df
-
-# lat, lon = sites['saa']["coords"]
-
-# D, I, H, X, Y, Z, F = pyIGRF.igrf_value(
-#      lat, 
-#      lon, 
-#      alt = 0, 
-#      year = 2013
-#      )
-
-# D

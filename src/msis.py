@@ -7,37 +7,6 @@ import datetime as dt
 import models as mm
 
 
-def point_msis(dn, glat, glon, alt):
-    
-    """
-    densities: list of floats
-    		0. He number density [cm^-3]
-    		1. O number density [cm^-3]
-    		2. N2 number density [cm^-3]
-    		3. O2 number density [cm^-3]
-    		4. AR number density [cm^-3]
-    		5. total mass density [g cm^-3] 
-    		6. H number density [cm^-3]
-    		7. N number density [cm^-3]
-    		8. Anomalous oxygen number density [cm^-3]
-        peratures: list of floats
-    		0. Exospheric temperature [K]
-    		1. Temperature at `alt` [K]
-
-    """
-    
-    t = get_indices(dn.date())
-    
-    res = msise_flat(
-       dn, alt, glat, glon, 
-       t.get("F10.7a"), t.get("F10.7obs"), t.get("Ap")
-       )
-
-    names = ["He", "O", "N2", "O2", "Ar", "mass", 
-            "H", "N", "AnO", "Tex", "Tn"]
-
-    return {key: value for key, value in zip(names, res)}
-
 
 def altrange_msis(
        dn: dt.datetime,

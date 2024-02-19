@@ -64,14 +64,6 @@ class ne_from_latitude:
         return Ne * np.exp(1.0 - z - np.exp(-z)) 
     
 
-def point_iri(dn, glat, glon, alt):
-    ds = iri.IRI(dn, [alt, alt, 1], glat, glon)
-    
-    ne = ds["ne"].values[0]
-    Te = ds["Te"].values[0]
-    return {"ne": ne, "te": Te}
-
-
 def altrange_iri(
         dn: dt.datetime,
         glat: float, 
