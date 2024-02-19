@@ -7,7 +7,7 @@ import datetime as dt
 import models as mm
 
 
-def point_msis(dn, zeq, glat, glon):
+def point_msis(dn, glat, glon, alt):
     
     """
     densities: list of floats
@@ -29,7 +29,7 @@ def point_msis(dn, zeq, glat, glon):
     t = get_indices(dn.date())
     
     res = msise_flat(
-       dn, zeq, glat, glon, 
+       dn, alt, glat, glon, 
        t.get("F10.7a"), t.get("F10.7obs"), t.get("Ap")
        )
 
