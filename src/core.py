@@ -1,6 +1,5 @@
 import GEO as gg
 import pyIGRF 
-import datetime as dt
 import iri2016 as iri
 from indices import get_indices
 from nrlmsise00 import msise_flat
@@ -75,11 +74,3 @@ def point_models(**kwargs):
             **point_igrf(**kwargs)}
 
 # def main():
-# kwargs = dict(
-#     dn = dt.datetime(2013, 1, 1, 0, 0), 
-#     glat = -11,
-#     glon = -80,
-#     alt = 300
-#     )
-
-# point_models(**kwargs)

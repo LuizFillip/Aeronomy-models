@@ -64,7 +64,8 @@ def timerange_msis(
             )
     for dn in times:
         
-        ts = point_msis(dn, altitude, glat, glon)
+        ts = mm.point_msis(dn, altitude, glat, glon)
+        
         for key in out.keys():
             out[key].append(ts[key])
             
