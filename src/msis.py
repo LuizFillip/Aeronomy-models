@@ -5,7 +5,7 @@ from nrlmsise00 import msise_flat
 from indices import get_indices
 import datetime as dt
 import models as mm
-
+from tqdm import tqdm 
 
 
 def altrange_msis(
@@ -43,11 +43,9 @@ def altrange_msis(
 
 
 def timerange_msis(
-        dn, 
+        times, 
         site = "car", 
         altitude = 300, 
-        periods = 67, 
-        parameter = "Tn", 
         correct = True):
     
     glat, glon = sites[site]["coords"]
@@ -57,22 +55,39 @@ def timerange_msis(
            'O2': [], 
            'N2': [], 
            }
-    times =  pd.date_range(
-            dn, 
-            periods = periods, 
-            freq = "10min"
-            )
-    for dn in times:
+   
+    for dn in tqdm(times):
         
+        # try:
         ts = mm.point_msis(dn, altitude, glat, glon)
         
         for key in out.keys():
             out[key].append(ts[key])
-            
-    df = pd.DataFrame(out, index = times)
+        # except:
+        #     continue
+
+    return  pd.DataFrame(out, index = times)
+
+
+def main():
+    start = dt.datetime(2013, 1, 1, 22)
+    end = dt.datetime(2023, 12, 31, 22)
     
-    if correct:
-        for col in df.columns:
-            df[col] = mm.correct_and_smooth(df[col])
+    times =  pd.date_range(
+            start,
+            end,
+            freq = "1D"
+            )
     
-    return df
+    df = timerange_msis(
+            times, 
+            site = "saa", 
+            altitude = 300, 
+            correct = True
+            )
+    
+    
+    df.to_csv('msis_saa')
+    
+    
+# main()

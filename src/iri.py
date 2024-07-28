@@ -116,7 +116,7 @@ def timeseries_iri(site = "saa"):
 
 def build_IRI_dataset(dn, glat, glon):
     
-    ds = iri.IRI(dn, [280, 320, 1], 
+    ds = iri.IRI(dn, [300, 300, 1], 
                  float(glat), 
                  float(glon))
 
@@ -124,15 +124,15 @@ def build_IRI_dataset(dn, glat, glon):
 
     df.index = df.index.get_level_values(0)
 
-    df['L'] = io.scale_gradient(df['ne'], df.index)
-
+    # df['L'] = io.scale_gradient(df['ne'], df.index)
+# 
     cols = [
         'ne', 'Tn', 'Ti', 'Te', 'dn',
         'NmF2', 'hmF2', 'foF2', 'L']
 
     df['dn'] = dn
     
-    return df.loc[df.index == 300, cols].set_index('dn')
+    return df.set_index('dn')
 
 
     
@@ -156,24 +156,17 @@ def build_map():
     df.to_csv(save)
     
 
+# dn = dt.datetime(2013, 1, 24, 22, 0)
 
-def Equator_profiles(dn):
-
-    glon, glat, x, y = gg.load_meridian(dn.year)
+# glat, glon = sites['saa']["coords"]
+# times = pd.date_range(
+#          dt.datetime(2013, 1, 1, 22), 
+#          dt.datetime(2022, 12, 31, 22), 
+#          freq = "1D")
+# out =[]
+# for dn in tqdm(times):
+#     out.append(build_IRI_dataset(dn, glat, glon))
     
-    
-    ds = altrange_iri(
-                   dn, glat, glon,
-                   hmin = 100, 
-                   hmax = 500,
-                   step = 10
-                   )
-     
-    ds['L'] = io.scale_gradient(ds['ne'], ds.index)
-    ds["alt"] = ds.index
-    
-    return ds
+# df = pd.concat(out)
 
-
-# dn = dt.datetime(2013, 12, 24, 22)
-
+# df.to_csv('ne_300')

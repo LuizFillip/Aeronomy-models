@@ -3,9 +3,8 @@ import pyIGRF
 import iri2016 as iri
 from indices import get_indices
 from nrlmsise00 import msise_flat
-
-
-
+import models as m 
+import aeronomy as ae 
 
 def point_msis(dn, glat, glon, alt):
     
@@ -74,3 +73,26 @@ def point_models(**kwargs):
             **point_igrf(**kwargs)}
 
 # def main():
+def Equator_profiles(dn):
+
+    glon, glat, x, y = gg.load_meridian(dn.year)
+    
+    
+    ds = m.altrange_iri(
+                   dn, glat, glon,
+                   hmin = 100, 
+                   hmax = 500,
+                   step = 10
+                   )
+     
+    ds['L'] = ae.scale_gradient(ds['ne'], ds.index)
+    ds["alt"] = ds.index
+    
+    return ds
+
+def main():
+    import datetime as dt 
+    dn = dt.datetime(2013, 12, 24)
+    df = Equator_profiles(dn)
+    
+    df.columns 

@@ -69,11 +69,12 @@ def build_times(year):
 
 
 site = 'jic'
-for year in [2016, 2017, 2018, 2020]:
+year = 2021
 
+def save_data(year, site):
     times = build_times(year)
     df = running_datasets(site, times)
     
-    save_in = f'models/temp/local_{year}'
+    save_in = f'models/temp/local_{year} '
     
     df.to_csv(save_in)

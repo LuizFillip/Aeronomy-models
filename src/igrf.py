@@ -25,36 +25,3 @@ def load_igrf(df, site = "saa"):
   
     return pd.DataFrame(out, index = df.index)
 
-
-def magnetic_parameters(df):
-    
-    try:
-        dn = df['dn'].values[0]
-    except:
-        dn = df.index[0]
-        
-    dn = pd.to_datetime(dn)
-    
-    dec = []
-    inc = []
-    total = []
-    for lat, lon, alt in zip(df.glat, df.glon, df.alt):
-        d, i, _, _, _, _, f = pyIGRF.igrf_value(
-            lat, 
-            lon, 
-            alt = alt, 
-            year = gg.year_fraction(dn)
-            )
-        
-        dec.append(d)
-        inc.append(i)
-        total.append(f)
-        
-        
-    df["d"] = dec
-    df["i"] = inc
-    df["Bf"] = total 
-    
-    df['Bf'] = df['Bf'] * 1e-9
-        
-    return df
