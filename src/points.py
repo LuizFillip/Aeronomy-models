@@ -1,7 +1,7 @@
 import GEO as gg
 import pyIGRF 
 import iri2016 as iri
-from indices import get_indices
+from indices import GFZ
 from nrlmsise00 import msise_flat
 import models as m 
 import aeronomy as ae 
@@ -25,12 +25,20 @@ def point_msis(dn, glat, glon, alt):
 
     """
     
-    t = get_indices(dn.date())
+    ind = GFZ(dn)
+    
+    f107a = ind.get('F10.7a')
+    f107o = ind.get("F10.7obs")
+    ap = ind.get("Ap")
     
     res = msise_flat(
-       dn, alt, glat, glon, 
-       t.get("F10.7a"), t.get("F10.7obs"), t.get("Ap")
-       )
+        dn, 
+        alt, 
+        glat, glon, 
+        f107a, 
+        f107o, 
+        ap
+        )
 
     names = ["He", "O", "N2", "O2", "Ar", "mass", 
             "H", "N", "AnO", "Tex", "Tn"]
@@ -52,9 +60,6 @@ def point_iri(dn, glat, glon, alt):
     return {"ne": ne, "te": Te}
 
 
-
-
-
 def point_igrf(dn, glat, glon, alt):
     
     d, i, _, _, _, _, f = pyIGRF.igrf_value(
@@ -72,27 +77,24 @@ def point_models(**kwargs):
             **point_msis(**kwargs), 
             **point_igrf(**kwargs)}
 
-# def main():
-def Equator_profiles(dn):
 
-    glon, glat, x, y = gg.load_meridian(dn.year)
-    
-    
-    ds = m.altrange_iri(
-                   dn, glat, glon,
-                   hmin = 100, 
-                   hmax = 500,
-                   step = 10
-                   )
-     
-    ds['L'] = ae.scale_gradient(ds['ne'], ds.index)
-    ds["alt"] = ds.index
-    
-    return ds
 
 def main():
     import datetime as dt 
-    dn = dt.datetime(2013, 12, 24)
-    df = Equator_profiles(dn)
+    dn = dt.datetime(2024, 10, 12)
     
-    df.columns 
+    glon, glat = -40, -7
+    alt = 300
+    
+    kwargs   = dict(
+        dn   = dn, 
+        glat = glat,
+        glon = glon, 
+        alt  = alt, 
+        )
+    
+    res = point_models(**kwargs)
+    
+    print(res)
+    
+# main()

@@ -2,12 +2,29 @@ from GEO import sites
 import pandas as pd
 import numpy as np
 from nrlmsise00 import msise_flat
-from indices import get_indices
+from indices import GFZ
 import datetime as dt
 import models as mm
 from tqdm import tqdm 
 
 
+# def Equator_profiles(dn):
+
+#     glon, glat, x, y = gg.load_meridian(dn.year)
+    
+    
+#     ds = m.altrange_iri(
+#         dn, glat, glon,
+#         hmin = 100, 
+#         hmax = 500,
+#         step = 10
+#         )
+     
+#     ds['L'] = ae.scale_gradient(ds['ne'], ds.index)
+#     ds["alt"] = ds.index
+    
+#     return ds
+ 
 def altrange_msis(
        dn: dt.datetime,
        glat: float, 
@@ -19,13 +36,20 @@ def altrange_msis(
     
     alts = np.arange(hmin, hmax + step, step)
      
-    t = get_indices(dn.date())
+    ind = GFZ(dn)
     
-    res = msise_flat(dn, alts[None, :], 
-                     glat, glon, 
-                     t.get("F10.7a"), 
-                     t.get("F10.7obs"), 
-                     t.get("Ap"))
+    f107a = ind.get('F10.7a')
+    f107o = ind.get("F10.7obs")
+    ap = ind.get("Ap")
+    
+    res = msise_flat(
+        dn, 
+        alts[None, :], 
+        glat, glon, 
+        f107a, 
+        f107o, 
+        ap
+        )
     
     columns = ["He", "O", "N2", "O2", "Ar", 
               "mass", "H", "N", "AnO", "Tex", "Tn"]
@@ -68,26 +92,7 @@ def timerange_msis(
 
     return  pd.DataFrame(out, index = times)
 
+# dn = dt.datetime(2024, 10, 23, 0)
 
-def main():
-    start = dt.datetime(2013, 1, 1, 22)
-    end = dt.datetime(2023, 12, 31, 22)
-    
-    times =  pd.date_range(
-            start,
-            end,
-            freq = "1D"
-            )
-    
-    df = timerange_msis(
-            times, 
-            site = "saa", 
-            altitude = 300, 
-            correct = True
-            )
-    
-    
-    df.to_csv('msis_saa')
-    
-    
-# main()
+
+# altrange_msis(dn, 0, 0)

@@ -156,17 +156,3 @@ def build_map():
     df.to_csv(save)
     
 
-# dn = dt.datetime(2013, 1, 24, 22, 0)
-
-# glat, glon = sites['saa']["coords"]
-# times = pd.date_range(
-#          dt.datetime(2013, 1, 1, 22), 
-#          dt.datetime(2022, 12, 31, 22), 
-#          freq = "1D")
-# out =[]
-# for dn in tqdm(times):
-#     out.append(build_IRI_dataset(dn, glat, glon))
-    
-# df = pd.concat(out)
-
-# df.to_csv('ne_300')

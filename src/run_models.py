@@ -7,7 +7,12 @@ import aeronomy as ae
 
 
 def kwargs_from_meridian(
-        dn, hmin = 100, hmax = 500, step = 10):
+        dn, 
+        hmin = 100, 
+        hmax = 500, 
+        step = 10
+        ):
+    
   glon, glat, x, y = gg.load_meridian(dn.year)
   return dict(
       dn = dn, 
@@ -43,14 +48,14 @@ def altrange_models(**kargs):
 def timerun():
     
     times = pd.date_range( 
-        dt.datetime(2013, 12, 24),
-        dt.datetime(2013, 12, 25), freq= '20min')
+        dt.datetime(2024, 10, 8),
+        dt.datetime(2024, 10, 25), freq= '1H')
 
 
     out = []
     for dn in times:
-        df = m.altrange_models(
-            **m.kwargs_from_meridian(dn, hmin = 100))
+        df = altrange_models(
+            **kwargs_from_meridian(dn, hmin = 100))
         df = ae.conductivity_parameters(df, other_conds = True)
         
         df['dn'] = dn
@@ -58,4 +63,6 @@ def timerun():
         
     df = pd.concat(out)
 
-    df.to_csv('conds')
+    print(df)
+    
+# timerun()

@@ -24,13 +24,16 @@ def neutral_compostion():
     return pd.pivot_table(
         df, values = 'ON2', columns = 'month', index = 'day')
 
+def electron_density():
 
-df = b.load("ne_300")
-
-df['month'] = df.index.year
-df['day'] = df.index.day_of_year
-ds = pd.pivot_table(
-   df, values = 'ne', columns = 'month', index = 'day')
+    df = b.load("ne_300")
+    
+    df['month'] = df.index.year
+    df['day'] = df.index.day_of_year
+    return pd.pivot_table(
+       df, values = 'ne', columns = 'month', index = 'day')
+    
+ds = neutral_compostion()
 
 
 fig, ax = plt.subplots(
@@ -46,20 +49,21 @@ plt.subplots_adjust(wspace= 0.05)
 img = ax[0].contourf(ds.columns, ds.index, ds.values, 40)
 
 
+label = '$[O]/[N_2]$'
 
 ax[1].plot(ds.mean(axis = 1), ds.index)
-ax[1].set(xlabel = '$n_0$ ($m^{-3}$)')
+ax[1].set(xlabel = label)
 ax[0].set(yticks = np.arange(0, 366, 60), 
           xticks = np.arange(2013, 2022, 2), 
           ylabel = 'Day of year', 
           xlabel = 'Years')
 
-ticks = np.linspace(0, 1.4e12, 5)
+ticks = np.linspace(4, 8, 5)
 b.colorbar(
         img, 
         ax[0], 
         ticks, 
-        label = '$n_0$ ($m^{-3}$)', 
+        label = label, #'$n_0$ ($m^{-3}$)', 
         height = '10%' , 
         width = "80%",
         orientation = "horizontal", 
