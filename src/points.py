@@ -3,8 +3,7 @@ import pyIGRF
 import iri2016 as iri
 from indices import GFZ
 from nrlmsise00 import msise_flat
-import models as m 
-import aeronomy as ae 
+
 
 def point_msis(dn, glat, glon, alt):
     
